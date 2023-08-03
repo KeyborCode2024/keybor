@@ -1,13 +1,15 @@
 # Keybor: Fine-grained Code Clone Detection by Keywords-based Connection of Program Dependency Graph
-Keybor is a PDG-based approach for complex semantic clone detection.
-To preserve more semantic information about method codes, we treat keywords as bridges to connect PDG nodes of target programs to identify codes with similar semantics in different code blocks. 
-Meanwhile, we are capable of performing line-level similarity matching to obtain fine-grained clone detection results.
+Code clone detection is intended to identify functionally similar code fragments, which is of growing importance in the field of software engineering. There have been many proposed methods for detecting code clones, among which graph-based methods can handle semantic code clones. However, they all only consider the feature extraction of a single sample and ignore the semantic connection between different samples, resulting in the detection effect is still unsatisfactory. Meanwhile, most of the methods can only give whether they are clones or not, but cannot report which lines of code are more similar. 
 
+In this paper, we propose a novel PDG-based semantic clone detection method namely Keybor which can give a fine-grained analysis of clone pairs to locate specific cloned lines of code. The highlight of the approach is to consider keywords as a bridge to connect PDG nodes of the target program to retain more semantic information about the functional code. To examine the effectiveness of Keybor, we assess it on a widely used BigCloneBench dataset. Experimental results indicate that Keybor is superior to 11 advanced code clone detection tools (i.e.,
+CCAligner, SourcererCC, Siamese, NIL, NiCad, LVMapper, CCFinder, CloneWorks, Oreo, Deckard, and CCGraph).
+
+# Design of Keybor
 Keybor is divided into four phases: PDG Generation, PDG Mergence, Feature Extraction, and Verifying.
 1. PDG Generation: 
   This phase aims to produce the corresponding PDG of the method.
   Therefore, the input of this phase is the methods and the output is the corresponding PDGs.
-  
+
 2. PDG Mergence: 
   This phase aims to merge two PDGs into one graph by adding keyword nodes.
   The input of this phase is two PDGs and the output is the merged PDG.
@@ -19,36 +21,6 @@ Keybor is divided into four phases: PDG Generation, PDG Mergence, Feature Extrac
 4. Verifying: 
   This phase aims to calculate the similarity score of extracted feature vectors to determine if code pairs are semantically clones. 
   The input of this phase is the vectors of the merged PDG and the output is the determination of clones or not.
-
-The source code and dataset of Tritor will be published here after the paper is accepted.
-
-
-# VulCT: Scalable Vulnerability Detection by Enhanced Tree Analysis
-In recent years, with the increasing scale and complexity of software, traditional vulnerability detection methods are difficulty meeting the growing demand, and vulnerability detection is gradually advancing toward automation and intelligence. Numerous deep learning-based methods for detecting vulnerabilities have been proposed, which can achieve relatively satisfactory results in real datasets. However, these methods face difficulties in ensuring both efficiency and accuracy of vulnerability detection simultaneously and cannot be applied to large-scale real software. 
-
-In this paper, we propose a novel enhanced tree-based vulnerability detection method, VulCT, which enables fast detection while preserving semantic features. We enrich the AST with data flow and control flow information, preserving the syntactic and semantic details of the program. Additionally, we introduce Markov chains to represent the AST in a simpler manner while maintaining its structural information. To examine the effectiveness of VulCT, we evaluate it on two widely used datasets namely FFmpeg+Qemu and Reveal. Experimental results indicate that VulCT is superior to seven state-of-the-art vulnerability detection tools (i.e., TokenCNN, VulDeePecker, SySeVR, ASTGRU, CodeBERT, Devign, and VulCNN). In terms of scalability, VuCT is ten times faster than VulCNN and 68 times faster than Devign.
-
-# Design of VulCT
-VulCT is divided into three phases: Static Analysis, Image Generation, and Classification.
-1. Static Analysis: 
-  The purpose of this step is to use static analysis to generate the corresponding Enhanced-AST. 
-  The input of this step is the source code of a function and the output is an Enhanced-AST.
-2. Image Generation: 
-  The purpose of this step is to convert the Enhanced-AST into a grayscale image. 
-  The input of this step is an Enhanced-AST and the output is a gray image.
-3. Classification:
-  This step aims to judge whether the input code is vulnerable. 
-  The input to this step is a gray image and the output reports the detection result.
-
-# Dataset
-We choose two datasets FFMPeg+Qemu and Reveal obtained from the real world as the experimental datasets to evaluate the performance of VulCT. 
-The dataset FFMPeg+Qemu provided by Devign is a balanced dataset obtained from the two open-source projects FFMPeg and Qemu, including about 12k vulnerable functions and 14k non-vulnerable functions. 
-The ReVeal dataset proposed by ReVeal is an unbalanced dataset collected from two open-source projects Chrome and Debian. 
-It consists of about 2k vulnerable functions and 20k non-vulnerable functions. 
-
-A significant number of samples of known vulnerabilities in real software systems are present in the two datasets mentioned above. 
-These vulnerability samples come from multiple sources and cover a wide range of vulnerability types (e.g., buffer overflows, format string vulnerabilities). 
-For each dataset, we randomly divide it in the ratio of 8:1:1 to generate disjoint training, validation and test sets. 
 
 # Source Code  
 ## Step 1: Language library build
