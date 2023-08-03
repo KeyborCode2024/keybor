@@ -23,27 +23,34 @@ Keybor is divided into four phases: PDG Generation, PDG Mergence, Feature Extrac
   The input of this phase is the vectors of the merged PDG and the output is the determination of clones or not.
 
 # Source Code  
-## Step 1: Language library build
-Build a C Parser Library for Tree-sitter (We implement Tree-sitter for static analysis generates AST.)
-Refer to [Tree-sitter](https://tree-sitter.github.io/tree-sitter/)
+## Step 1: File Preprocess
 ```
-cd parse
-bash build.sh
+python FileAddClass.py -i ../dataset/id2sourcecode -o ../java
+
 ```
 
-## Step2: ImageGeneration
-Implementation of static analysis and image generation steps
-- Input: dataset with source codes
-- Output: gray images 
+## Step 2: Generate pdgs with the help of joern
+Prepare the environment refering to: [joern](https://github.com/joernio/joern) you can try the version between 1.1.995 to 1.1.1125
 ```
-python ImageGeneration.py -i ../data/sard -o ../images/sard -t faast
+# generate .bin files
+python JoernGraph.py -i ../java -o ../bin -t parse
+
+# generate pdgs (.dot files)
+python JoernGraph.py -i ../bin -o ../dot -t export
+
+# change pdgs struct
+python PdgGeneration.py -d ../dot -f ../java -o ../pdg
+
 ```
 
-### Step3: Classification
-Implementing multiple CNN models to classify grayscale images
-- Input: gray images of dataset
-- Output: recall, precision, and F1 scores of CNN models
+## Step3: PDG Mergence
+Combining the two PDGs of a clone pair into a single graph PairPDG
 ```
-python Classification.py -i ../images -o ../result -t sard -m densenet
+ python 3_PdgMergel.py -p ../pair_csv/  -i ../pdg/ -o ../images
+
 ```
+
+## Step4: Feature Extraction
+Transforming PairPDG into feature vectors
+
 
