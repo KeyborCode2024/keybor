@@ -26,7 +26,6 @@ Keybor is divided into four phases: PDG Generation, PDG Mergence, Feature Extrac
 ## Step 1: File Preprocess
 ```
 python FileAddClass.py -i ../dataset/id2sourcecode -o ../java
-
 ```
 
 ## Step 2: Generate pdgs with the help of joern
@@ -40,14 +39,12 @@ python JoernGraph.py -i ../bin -o ../dot -t export
 
 # change pdgs struct
 python PdgGeneration.py -d ../dot -f ../java -o ../pdg
-
 ```
 
 ## Step3: PDG Mergence
 Combining the two PDGs of a clone pair into a single graph PairPDG
 ```
  python 3_PdgMergel.py -p ../pair_csv/  -i ../pdg/ -o ../images
-
 ```
 
 ## Step4: Feature Extraction
