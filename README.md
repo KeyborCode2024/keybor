@@ -75,8 +75,8 @@ python FeatureExtraction_struc2vec.py -i ../../images -o ../../emb/Struc2vec
 ## Step7: Verifying
 Calculate the similarity score of extracted feature vectors to determine if code pairs are semantically clones.
 ```
-python sim.py -i ../emb -o ../cos
-python Classification.py -i ../cos -o ../result
+python cos.py -i ../emb -o ../cos -m Struc2vec
+python Classification.py -i ../cos -o ../result -m Struc2vec
 ```
 
 
