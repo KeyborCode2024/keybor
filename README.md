@@ -22,7 +22,7 @@ python PdgGeneration.py -d ../dot -f ../java -o ../pdg
 ## Step3: PDG Mergence
 Combining the two PDGs of a clone pair into a single graph PairPDG
 ```
- python 3_PdgMerge.py -p ../pair_csv/  -i ../pdg/ -o ../images
+ python PdgMerge.py -p ../pair_csv/  -i ../pdg/ -o ../images
 ```
 
 #### Step 4: Train a sent2vec model
@@ -53,7 +53,7 @@ python FeatureExtraction_struc2vec.py -i ../../images -o ../../emb/Struc2vec
 ## Step7: Verifying
 Calculate the similarity score of extracted feature vectors to determine if code pairs are semantically clones.
 ```
-python cos.py -i ../emb -o ../cos -m Struc2vec
+python sim.py -i ../emb -o ../cos -m Struc2vec
 python Classification.py -i ../cos -o ../result -m Struc2vec
 ```
 
