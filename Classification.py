@@ -9,7 +9,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Image-based Vulnerability Detection.')
     parser.add_argument('-i', '--input', help='The path of a dir which consists of some cos result', required=True)
     parser.add_argument('-o', '--output', help='The path of result.', required=True)
-    parser.add_argument('-m', '--model', help='The type of model.', required=True)
+    # parser.add_argument('-m', '--model', help='The type of model.', required=True)
     args = parser.parse_args()
     return args
 
@@ -81,30 +81,46 @@ def getmetrics(clonecos, noclonecos, threshold):
     return [recall, precision, f1, accuracy]
 
 def Classification(dir_path, out_path, threshold, model):
-    
-    key_index = 'node2vec'
-    nokey_index = 'node2vec_nokey'
+    Struct_models = ['Struc2vec', 'Role2vec', 'Graphwave']
+    Attribute_models = ['MUSAE', 'AE']
+    if model in Struct_models:
+        key_index = 'avg_node2vec'
+        nokey_index = 'avg_node2vec_nokey'
+        topic_index = 'avg_node2vec_topic'
 
-    csv_data = [[] for i in range(20)]
+    elif model in Attribute_models:
+        key_index = 'node2vec'
+        nokey_index = 'node2vec_nokey'
+        topic_index = 'node2vec_topic'
+    else:
+        print('Model Error')
+
+    csv_data = [[] for i in range(30)]
     csv_data[0] = ['Type', 'Recall', 'Precision', 'F-measure', 'Accuracy']
     noclonepath = dir_path + 'noclone.csv'
     df_noclone = pd.read_csv(noclonepath,index_col=0,header=0)
     noclone_key = np.array(df_noclone.loc[key_index,:])
     noclone_nokey = np.array(df_noclone.loc[nokey_index,:])
+    noclone_topic = np.array(df_noclone.loc[topic_index,:])
     csv_data[1].append('noclone_key')
     csv_data[1].extend(getmetrics_noclone(noclone_key, threshold))
     csv_data[2].append('noclone_nokey')
     csv_data[2].extend(getmetrics_noclone(noclone_nokey, threshold))
+    csv_data[3].append('noclone_topic')
+    csv_data[3].extend(getmetrics_noclone(noclone_topic, threshold)) 
+
 
     types = ['type_1', 'type_2', 'type_3', 'type_4','type_5', 'type_6']
     all_key = np.array([])
     all_nokey = np.array([])
-    i = 3
+    all_topic = np.array([])
+    i = 4
     for t in types:
         clonepath = dir_path + t + '.csv'
         df_clone = pd.read_csv(clonepath,index_col=0,header=0)
         clone_key = np.array(df_clone.loc[key_index,:])
         clone_nokey = np.array(df_clone.loc[nokey_index,:])
+        clone_topic = np.array(df_clone.loc[topic_index,:])
 
         csv_data[i].append(t + '_key')
         csv_data[i].extend(getmetrics_clone(clone_key, threshold))
@@ -112,14 +128,21 @@ def Classification(dir_path, out_path, threshold, model):
         csv_data[i].append(t + '_nokey')
         csv_data[i].extend(getmetrics_clone(clone_nokey, threshold))
         i +=1
+        csv_data[i].append(t + '_topic')
+        csv_data[i].extend(getmetrics_clone(clone_topic, threshold))
+        i +=1
 
         all_key = np.hstack((all_key,clone_key))
         all_nokey = np.hstack((all_nokey,clone_nokey))
+        all_topic = np.hstack((all_topic,clone_topic))
     csv_data[i].append('all_key')
     csv_data[i].extend(getmetrics(all_key, noclone_key, threshold))
     i += 1
     csv_data[i].append('all_nokey')
     csv_data[i].extend(getmetrics(all_nokey, noclone_nokey, threshold))
+    i += 1
+    csv_data[i].append('all_topic')
+    csv_data[i].extend(getmetrics(all_topic, noclone_topic, threshold))
     with open(out_path, 'w', newline='') as f:
         csvfile = csv.writer(f)
         csvfile.writerows(csv_data)
@@ -128,26 +151,29 @@ def main():
     args = parse_args()
     dir_path = args.input
     out_path = args.output
-    model = args.model
+    # model = args.model
 
     if dir_path[-1] == '/':
         dir_path = dir_path
     else:
         dir_path += '/'
-    dir_path = dir_path + model + '/'
 
     if out_path[-1] == '/':
         out_path = out_path
     else:
         out_path += '/'
-    out_path = out_path + model + '/'
-    if not os.path.exists(out_path):
-        os.makedirs(out_path)
 
-    thresholds = [0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95]
-    for t in thresholds:
-        out_csv = out_path + str(int(t*100)) + '.csv'
-        Classification(dir_path, out_csv, t, model)
+    models = ['Struc2vec', 'Role2vec', 'MUSAE', 'AE']    
+    for model in models:
+        dir = dir_path + model + '/'
+        out = out_path + model + '/'
+        if not os.path.exists(out):
+            os.makedirs(out)
+
+        thresholds = [0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95]
+        for t in thresholds:
+            out_csv = out + str(int(t*100)) + '.csv'
+            Classification(dir, out_csv, t, model)
 
 
 if __name__ == '__main__':
